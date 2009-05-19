@@ -37,7 +37,7 @@ k = $.keys = {
 		if ( key ) {
 			mns.push(key);
 		}
-		return mns.sort().join('+');
+		return mns.length ? mns.sort().join('+') : 'none';
 	},
 	
 	// Register event types to allow keycombo filtering via namespaces
