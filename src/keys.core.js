@@ -53,7 +53,10 @@ k = $.keys = {
 };
 
 function add(handler, data, namespaces) {
-			
+/*DEBUG*add*
+	var $$elem = this;
+*DEBUG*add*/
+
 	// Interpret namespaces in parenthesis (...) as a key combo.
 	if ( namespaces.length ) {
 		var combos = {}, proxy;
@@ -61,20 +64,23 @@ function add(handler, data, namespaces) {
 		$.each(namespaces, function() {
 			var m = /^\((.+)\)$/.exec(this);
 			if ( m ) {
-				var c = $.map(m[1].toLowerCase().split('+'), function() { return k.aliases[this] || this; })
+				var c = $.map(m[1].toLowerCase().split('+'), function(n) { return k.aliases[n] || n; })
 						.sort().join('+');
 				combos[c] = true;
 				proxy = true;
+/*DEBUG*add*
+				console.log('keys add:', $$elem, c);
+*DEBUG*add*/
 			}
 		});
 		
 		if ( proxy ) {
 			return function(event) {
 				if ( !event.keyCombo ) {
-					event.keyCombo = keyCombo(event);
-/*DEBUG*keyCombo*
-					console.log(event, event.keyCombo);
-*DEBUG*keyCombo*/
+					event.keyCombo = k.combo(event);
+/*DEBUG*event*
+					console.log('keys event:', event, event.keyCombo);
+*DEBUG*event*/
 				}
 				if ( combos[event.keyCombo] ) {
 					return handler.apply(this, arguments);
