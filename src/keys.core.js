@@ -8,8 +8,8 @@
  * Author: Mark Gibson (jollytoad at gmail dot com)
  */
 /* Allow filtering of keyboard events using a special namespace syntax:
- *  .bind('keydown.(shift+home)', ...);
- *  .bind('click.(shift)', ...);
+ *  .bind('keydown.key:shift-home', ...);
+ *  .bind('click.key:shift', ...);
  */
 (jQuery.keys || (function($) {
 
@@ -18,6 +18,9 @@ k = $.keys = {
 	modifiers: ['alt','meta','shift'],
 	
 	modifierRegex: /^(alt|meta|shift)$/,
+	
+	namespaceRegex: /^key:(.+)$/,
+	mnemonicDelim: '-',
 	
 	// keyCode => mnemonic (assigned later)
 	codes: [],
@@ -39,18 +42,19 @@ k = $.keys = {
 		if ( key ) {
 			mns.push(key);
 		}
-		return mns.length ? mns.join('+') : 'none';
+		return mns.length ? mns.join(k.mnemonicDelim) : 'none';
 	},
 	
 	normalise: function( combo ) {
 		var re = k.modifierRegex, al = k.aliases;
-		return $.map($.trim(combo).toLowerCase().split(/\s*\+\s*/), function(n) { return al[n] || n; })
+		return $.map(combo.replace(/\s/g,'').toLowerCase().split(k.mnemonicDelim),
+						function(n) { return al[n] || n; })
 				.sort(function(a,b) {
 					a = re.test(a) ? ' '+a : a;
 					b = re.test(b) ? ' '+b : b;
 					return a > b ? 1 : (a < b ? -1 : 0);
 				})
-				.join('+');
+				.join(k.mnemonicDelim);
 	},
 	
 	// Register event types to allow keycombo filtering via namespaces
@@ -75,7 +79,7 @@ function add(handler, data, namespaces) {
 		var combos = {}, proxy;
 		
 		$.each(namespaces, function() {
-			var m = /^\((.+)\)$/.exec(this);
+			var m = k.namespaceRegex.exec(this);
 			if ( m ) {
 				var c = k.normalise(m[1]);
 				combos[c] = true;
@@ -87,7 +91,7 @@ function add(handler, data, namespaces) {
 		});
 		
 		if ( proxy ) {
-			return function(event) {
+			proxy = function(event) {
 				if ( !event.keyCombo ) {
 					event.keyCombo = k.combo(event);
 /*DEBUG*event*
@@ -98,6 +102,8 @@ function add(handler, data, namespaces) {
 					return handler.apply(this, arguments);
 				}
 			};
+			proxy.type = handler.type;
+			return proxy;
 		}
 	}
 }
