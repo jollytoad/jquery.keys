@@ -17,6 +17,8 @@ var k;
 k = $.keys = {
 	modifiers: ['alt','meta','shift'],
 	
+	modifierRegex: /^(alt|meta|shift)$/,
+	
 	// keyCode => mnemonic (assigned later)
 	codes: [],
 	
@@ -37,7 +39,18 @@ k = $.keys = {
 		if ( key ) {
 			mns.push(key);
 		}
-		return mns.length ? mns.sort().join('+') : 'none';
+		return mns.length ? mns.join('+') : 'none';
+	},
+	
+	normalise: function( combo ) {
+		var re = k.modifierRegex, al = k.aliases;
+		return $.map($.trim(combo).toLowerCase().split(/\s*\+\s*/), function(n) { return al[n] || n; })
+				.sort(function(a,b) {
+					a = re.test(a) ? ' '+a : a;
+					b = re.test(b) ? ' '+b : b;
+					return a > b ? 1 : (a < b ? -1 : 0);
+				})
+				.join('+');
 	},
 	
 	// Register event types to allow keycombo filtering via namespaces
@@ -64,8 +77,7 @@ function add(handler, data, namespaces) {
 		$.each(namespaces, function() {
 			var m = /^\((.+)\)$/.exec(this);
 			if ( m ) {
-				var c = $.map(m[1].toLowerCase().split('+'), function(n) { return k.aliases[n] || n; })
-						.sort().join('+');
+				var c = k.normalise(m[1]);
 				combos[c] = true;
 				proxy = true;
 /*DEBUG*add*
