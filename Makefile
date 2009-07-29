@@ -1,4 +1,4 @@
-PACKAGE = jquery-keys
+PACKAGE = jquery.keys
 
 MODULES = keys.core.js
 
