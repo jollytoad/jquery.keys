@@ -1,5 +1,5 @@
 /*!
- * jQuery Advanced Key Binding @VERSION (@DATE)
+ * jQuery Advanced Key Binding @VERSION
  *
  * Copyright (c) 2009 Adaptavist.com Ltd
  * Dual licensed under the MIT (MIT-LICENSE.txt)
