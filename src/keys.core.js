@@ -13,7 +13,7 @@
  */
 (jQuery.keys || (function($) {
 
-var k;
+var k, init;
 k = $.keys = {
 	modifiers: ['alt','meta','shift'],
 	
@@ -33,6 +33,10 @@ k = $.keys = {
 
 	// Construct a key combination string from an event
 	combo: function( event ) {
+		if ( !init ) {
+			initCodes();
+			init = true;
+		}
 		var mns = [], key = k.codes[event.keyCode];
 		$.each(k.modifiers, function() {
 			if ( event[this+'Key'] ) {
@@ -118,22 +122,24 @@ function kc() {
 }
 
 // Add key mnemonics
-kc(8,   'backspace', 'tab');
-kc(13,  'enter');
-kc(16,  'shift', 'ctrl', 'alt', 'pause', 'capslock');
-kc(27,  'esc');
-kc(32,  'space', 'pageup', 'pagedown', 'end', 'home', 'left', 'up', 'right', 'down');
-kc(44,  'printscreen', 'insert', 'delete');
-kc(48,  '0','1','2','3','4','5','6','7','8','9');
-kc(65,  'a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z');
-kc(91,  'leftstart', 'rightstart', 'menu');
-kc(96,  'np0','np1','np2','np3','np4','np5','np6','np7','np8','np9');
-kc(106, 'npasterisk', 'npplus');
-kc(109, 'npminus', 'npdot', 'npslash');
-kc(112, 'f1','f2','f3','f4','f5','f6','f7','f8','f9','f10','f11','f12');
-kc(144, 'numlock', 'scrlock');
-kc(187, 'equal', 'comma', 'minus', 'dot', 'slash', 'quote');
-kc(219, 'openbracket', 'backslash', 'closebracket', 'tick');
+function initCodes() {
+	kc(8,   'backspace', 'tab');
+	kc(13,  'enter');
+	kc(16,  'shift', 'ctrl', 'alt', 'pause', 'capslock');
+	kc(27,  'esc');
+	kc(32,  'space', 'pageup', 'pagedown', 'end', 'home', 'left', 'up', 'right', 'down');
+	kc(44,  'printscreen', 'insert', 'delete');
+	kc(48,  '0','1','2','3','4','5','6','7','8','9');
+	kc(65,  'a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z');
+	kc(91,  'leftstart', 'rightstart', 'menu');
+	kc(96,  'np0','np1','np2','np3','np4','np5','np6','np7','np8','np9');
+	kc(106, 'npasterisk', 'npplus');
+	kc(109, 'npminus', 'npdot', 'npslash');
+	kc(112, 'f1','f2','f3','f4','f5','f6','f7','f8','f9','f10','f11','f12');
+	kc(144, 'numlock', 'scrlock');
+	kc(187, 'equal', 'comma', 'minus', 'dot', 'slash', 'quote');
+	kc(219, 'openbracket', 'backslash', 'closebracket', 'tick');
+}
 
 // Register a default set of events
 k.register('keydown', 'keyup', 'click');
