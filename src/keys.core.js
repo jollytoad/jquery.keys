@@ -10,6 +10,8 @@
 /* Allow filtering of keyboard events using a special namespace syntax:
  *  .bind('keydown.key:shift-home', ...);
  *  .bind('click.key:shift', ...);
+ *
+ * Requires jQuery 1.4.1+
  */
 (jQuery.keys || (function($) {
 
@@ -76,9 +78,19 @@ k = $.keys = {
 function add(handler, data, namespaces) {
 /*DEBUG*add*
 	var $$elem = this;
+	console.log('keys add params:', this, arguments);
 *DEBUG*add*/
 
-	// Interpret namespaces in parenthesis (...) as a key combo.
+	var handlerObj;
+
+	// jQuery 1.4.2+ passes a single object param
+	if ( typeof handler === 'object' ) {
+		handlerObj = handler;
+		namespaces = handlerObj.namespace.split(".");
+		handler = handlerObj.handler;
+	}
+
+	// Interpret namespaces that match the namespaceRegex as a key combo.
 	if ( namespaces.length ) {
 		var combos = {}, proxy;
 		
@@ -106,8 +118,12 @@ function add(handler, data, namespaces) {
 					return handler.apply(this, arguments);
 				}
 			};
-			proxy.type = handler.type;
-			return proxy;
+			if ( handlerObj ) {
+				handlerObj.handler = proxy;
+			} else {
+				proxy.type = handler.type;
+				return proxy;
+			}
 		}
 	}
 }

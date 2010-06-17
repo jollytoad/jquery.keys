@@ -89,3 +89,15 @@ test("bind keydown", 0, function() {
     $('#bind-target').unbind('keydown');
 });
 
+test("bind multiple namespaces", 3, function() {
+    $('#bind-target').one('click.key:ctrl.key:shift.testme', function(event) {
+        same( event.type, "click" );
+        ok( event.shiftKey , "Expected shift key" );
+        same( event.keyCombo, "shift" );
+        start();
+    });
+
+    stop();
+    $('#bind-target').trigger({ type: 'click', shiftKey: true });
+});
+
