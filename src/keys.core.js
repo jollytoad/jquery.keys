@@ -13,9 +13,25 @@
  *
  * Requires jQuery 1.4.1+
  */
-(jQuery.keys || (function($) {
+/*global jQuery, initCodes, add */
+(function($) {
 
-var k, init;
+var k;
+
+// Construct a key combination string from an event
+function combo( event ) {
+	var mns = [], key = k.codes[event.keyCode];
+	$.each(k.modifiers, function() {
+		if ( event[this+'Key'] ) {
+			mns.push(this);
+		}
+	});
+	if ( key ) {
+		mns.push(key);
+	}
+	return mns.length ? mns.join(k.mnemonicDelim) : 'none';
+}
+
 k = $.keys = {
 	modifiers: ['alt','meta','shift'],
 	
@@ -33,22 +49,12 @@ k = $.keys = {
 		'return': 'enter'
 	},
 
-	// Construct a key combination string from an event
-	combo: function( event ) {
-		if ( !init ) {
-			initCodes();
-			init = true;
-		}
-		var mns = [], key = k.codes[event.keyCode];
-		$.each(k.modifiers, function() {
-			if ( event[this+'Key'] ) {
-				mns.push(this);
-			}
-		});
-		if ( key ) {
-			mns.push(key);
-		}
-		return mns.length ? mns.join(k.mnemonicDelim) : 'none';
+	combo: function() {
+		// Initialise codes when this function is first called
+		initCodes();
+		// Replace this function with the real combo function
+		k.combo = combo;
+		return combo.apply(this, arguments);
 	},
 	
 	normalise: function( combo ) {
@@ -160,6 +166,5 @@ function initCodes() {
 // Register a default set of events
 k.register('keydown', 'keyup', 'click');
 
-})(jQuery)
-);
+})(jQuery);
 
